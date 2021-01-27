@@ -66,6 +66,16 @@ else
     CONFIG_LISTEN_PORT="-o Port=22"
 fi
 
+#
+# Note - By default, SSHD’s TCP port forwarding will allow the user to forward their connection to any remote TCP port in your private network. You can limit forwarding to port 22 (SSH) if you don’t want other kinds of traffic to be forwarded to internal hosts: 
+# PermitOpen *:22 
+#
+
+#
+# Note - To avoid the user to make ANY changes to the bastion immage (assuming that they can, it is read only), change the shell to "nologin". They will not be able to run any command:
+# ForceCommand /sbin/nologin
+#
+
 /usr/sbin/sshd -D -e -4 \
     -o "HostKey=$HOST_KEYS_PATH/ssh_host_rsa_key" \
     -o "HostKey=$HOST_KEYS_PATH/ssh_host_dsa_key" \
@@ -74,6 +84,8 @@ fi
     -o "PasswordAuthentication=no" \
     -o "PermitEmptyPasswords=no" \
     -o "PermitRootLogin=no" \
+    -o "ForceCommand /sbin/nologin" \
+    -o "PermitOpen *:22" \
     $CONFIG_PUBKEY_AUTHENTICATION \
     $CONFIG_AUTHORIZED_KEYS \
     $CONFIG_GATEWAY_PORTS \
